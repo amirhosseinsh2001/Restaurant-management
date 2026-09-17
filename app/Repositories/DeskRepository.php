@@ -33,31 +33,53 @@ class DeskRepository extends CoreRepository
         return $this->model->destroy($desk->id);
     }
 
-    public function findAvailableTable(string $reservationDate, string $startTime, string $endTime, int $guestCount)
+    private function baseAvailableQuery($date, $start, $end, $guestCount)
     {
         return $this->model->query()
+            ->where('status', 'available')
             ->where('capacity', '>=', $guestCount)
-            ->whereDoesntHave('reservations', function ($query) use ($reservationDate, $startTime, $endTime) {
-                $query->where('reservation_date', $reservationDate)
-                    ->where('start_time', '<', $endTime)
-                    ->where('end_time', '>', $startTime);
-            })
-            ->orderBy('capacity')
-            ->lockForUpdate()
-            ->first();
+            ->availableBetween($date, $start, $end);
+    }
+
+    public function findAvailableTable(string $reservationDate, string $startTime, string $endTime, int $guestCount)
+    {
+//        return $this->model->query()
+//            ->where('capacity', '>=', $guestCount)
+//            ->whereDoesntHave('reservations', function ($query) use ($reservationDate, $startTime, $endTime) {
+//                $query->where('reservation_date', $reservationDate)
+//                    ->where('start_time', '<', $endTime)
+//                    ->where('end_time', '>', $startTime);
+//            })
+//            ->orderBy('capacity')
+//            ->lockForUpdate()
+//            ->first();
+        return DB::transaction(function () use ($reservationDate, $startTime, $endTime, $guestCount) {
+
+            $desk = $this->baseAvailableQuery($reservationDate, $startTime, $endTime, $guestCount)
+                ->orderBy('capacity')
+                ->lockForUpdate()
+                ->first();
+
+            return $desk;
+        });
     }
 
     public function suggestAvailableDesks(string $reservationDate, string $startTime, string $endTime, int $guestCount)
     {
-        return $this->model->query()
-            ->where('capacity', '>=', $guestCount)
-            ->where('status', 'available')
-            ->whereDoesntHave('reservations', function ($query) use ($reservationDate, $startTime, $endTime) {
-                $query->where('reservation_date', $reservationDate)
-                    ->where('start_time', '<', $endTime)
-                    ->where('end_time', '>', $startTime);
-            })
-            ->orderBy('capacity')
+//        return $this->model->query()
+//            ->where('capacity', '>=', $guestCount)
+//            ->where('status', 'available')
+//            ->whereDoesntHave('reservations', function ($query) use ($reservationDate, $startTime, $endTime) {
+//                $query->where('reservation_date', $reservationDate)
+//                    ->where('start_time', '<', $endTime)
+//                    ->where('end_time', '>', $startTime);
+//            })
+//            ->orderByRaw('capacity - ? ASC', [$guestCount])
+//            ->select('id', 'desk_number', 'capacity')
+//            ->limit(5)
+//            ->get();
+        return $this->baseAvailableQuery($reservationDate, $startTime, $endTime, $guestCount)
+            ->orderByRaw('capacity - ? ASC', [$guestCount])
             ->select('id', 'desk_number', 'capacity')
             ->limit(5)
             ->get();

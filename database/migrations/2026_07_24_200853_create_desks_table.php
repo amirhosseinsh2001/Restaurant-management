@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('desk_number')->unique();
             $table->integer('capacity');
             $table->enum('status', ['available', 'unavailable']);
+//            $table->index(['capacity']);
             $table->timestamps();
         });
     }

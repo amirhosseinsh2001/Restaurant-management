@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
+    Route::post('register', [AuthController::class, 'register'])->name('auth-register');
     Route::post('verify-register', [AuthController::class, 'verify_register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('verify-login', [AuthController::class, 'verifyLogin']);

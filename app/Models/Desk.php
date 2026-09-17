@@ -21,4 +21,13 @@ class Desk extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    public function scopeAvailableBetween($query, $date, $start, $end)
+    {
+        return $query->whereDoesntHave('reservations', function ($q) use ($date, $start, $end) {
+            $q->where('reservation_date', $date)
+                ->where('start_time', '<', $end)
+                ->where('end_time', '>', $start);
+        });
+    }
 }
