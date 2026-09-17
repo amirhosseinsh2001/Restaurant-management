@@ -8,6 +8,7 @@ return [
     'user_created_successfully' => 'کاربر با موفقیت ایجاد شد',
     'user_login_successfully' => 'کاربر با موفقیت وارد شد',
     'user_email_not_found' => 'کاربر با ایمیل وارد شده پیدا نشد',
+    'user_updated_successfully' => 'اطلاعات کاربر با موفقیت بروزرسانی شد',
     'otp_is_invalid' => 'کد وارد شده صحیح نمی باشد',
     'user_phone_not_found' => 'کاربری با این شماره موبایل وجود ندارد لطفا ابتدا ثبت نام کنید',
     'user_information_loaded_successfully' => 'اطلاعات کاربر با موفقیت دریافت شد',

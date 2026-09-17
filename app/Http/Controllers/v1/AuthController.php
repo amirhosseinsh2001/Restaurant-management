@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\LoginWithPhoneRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\VerifyRequest;
+use App\Http\Requests\updateInfoRequest;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -96,10 +97,11 @@ class AuthController extends Controller
         return $this->successResponse($result, __('messages.user_logged_out_successfully'), 200);
     }
 
-    public function update(Request $request)
+    public function update(updateInfoRequest $request)
     {
+        $data = $request->validated();
         $user = Auth::user();
-        $result = $this->authService->updateInfo((array)$user);
+        $result = $this->authService->updateInfo($user->id, $request->validated());
         return $this->successResponse($result, __('messages.user_updated_successfully'), 200);
     }
 }

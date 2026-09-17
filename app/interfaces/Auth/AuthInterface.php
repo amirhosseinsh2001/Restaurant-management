@@ -4,6 +4,6 @@ namespace App\interfaces\Auth;
 
 interface AuthInterface
 {
-    public function register(array $data, string $field, string $value);
+    public function update(array $data, int $id);
     public function verify(array $data);
 }

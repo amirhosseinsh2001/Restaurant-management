@@ -16,22 +16,18 @@ class AuthRepository extends CoreRepository implements AuthInterface
         parent::__construct($model);
     }
 
-    /**
-     * @param array $data
-     * @param string $field
-     * @param string $value
-     * @return void
-     */
-    public function register(array $data, string $field, string $value): void
+    public function update(array $data, int $id)
     {
+        $user = $this->findByField("id", $id);
+        if (!$user) {
+            return null;
+        }
+        $user->update($data);
+        return $user->refresh();
     }
 
-    /**
-     * @param array $data
-     * @return mixed
-     */
     public function verify(array $data): mixed
     {
-        return User::create($data);
+        return $this->model->create($data);
     }
 }

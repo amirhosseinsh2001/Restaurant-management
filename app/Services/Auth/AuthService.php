@@ -70,8 +70,9 @@ class AuthService
         }
         $verifiedField = $field . '_verified_at';
         $userData[$verifiedField] = now()->toDateTimeString();
-        $this->repository->verify($userData);
+        $user = $this->repository->verify($userData);
         Cache::forget($userDataCacheKey);
+        return $user;
     }
 
     /**
@@ -134,15 +135,42 @@ class AuthService
     /** @noinspection PhpPossiblePolymorphicInvocationInspection */
     public function logout(User|Authenticatable|null $user)
     {
-        $user->token()->revoke();
+//        $user->token()->revoke();
+        $user?->token()?->revoke();
     }
 
-    public function updateInfo(array $data): array
+    public function updateInfo(User $userId, array $data): array
     {
-        $user = $this->repository->findByField('id', $data['id']);
-        dd($user);
+        $user = $this->repository->findByField('id', $userId);
+
         if (!$user) {
-            throw new \Exception('خطایی رخ داده است');
+            throw new AuthException(__('messages.user_not_found'), 404);
         }
+
+        $mustReVerify = false;
+
+
+        if (isset($data['email']) && $data['email'] !== $user->email) {
+            $data['email'] = trim($data['email']);
+            $data['email_verified_at'] = null;
+            $mustReVerify = true;
+        }
+
+
+        if (isset($data['phone']) && $data['phone'] !== $user->phone) {
+            $data['phone'] = trim($data['phone']);
+            $data['phone_verified_at'] = null;
+            $mustReVerify = true;
+        }
+
+
+        $updatedUser = $this->repository->update($data, $user);
+
+
+        if ($mustReVerify) {
+            $this->logout($user);
+        }
+
+        return $updatedUser;
     }
 }
