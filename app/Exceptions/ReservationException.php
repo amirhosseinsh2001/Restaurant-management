@@ -28,6 +28,11 @@ class ReservationException extends Exception
         return new self(__('messages.desks.desk_is_not_available'), 429, []);
     }
 
+    public static function deskCapacityNotFit(array $suggestion)
+    {
+        return new self(__('messages.desks.desk_capacity_not_fit'), 429, [],['suggestion' => $suggestion]);
+    }
+
     public function render()
     {
         $statusCode = is_numeric($this->getCode()) && $this->getCode() >= 400 && $this->getCode() < 600

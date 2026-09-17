@@ -21,7 +21,8 @@ return [
         'desk_not_found' => 'میز یافت نشد',
         'desk_deleted_successfully' => 'میز با موفقیت حذف شد',
         'desk_reserved' => 'میز در این زمان رزرو شده است',
-        'desk_is_not_available' => 'در حال حاضر در زمان مورد نظر میز خالی وجود ندارد'
+        'desk_is_not_available' => 'در حال حاضر در زمان مورد نظر میز خالی وجود ندارد',
+        'desk_capacity_not_fit' => 'ظرفیت میز انتخاب شده بیشتر از تعداد مهمان های شما است.',
     ],
     'categories' => [
         'categories_listed_successfully' => 'لیست دسته بندی ها با موفقیت نمایش داده شد',

@@ -30,6 +30,13 @@ class ReservationService extends CoreRepository
                 if ($desk->capacity < $data['guests_count']) {
                     throw new ReservationException("ظرفیت میز کافی نیست.", 422);
                 }
+                //TODO: Add suggestion for below condition.
+                if ($desk->capacity > $data['guests_count']) {
+                    $suggestions = $this->getAvailableDesks($data);
+                    throw ReservationException::deskCapacityNotFit(
+                        deskSuggestionResource::collection($suggestions)->resolve(),
+                    );
+                }
                 $isAvailable = $this->reservationRepository->isTableAvailable(
                     $data['desk_id'],
                     $data['reservation_date'],

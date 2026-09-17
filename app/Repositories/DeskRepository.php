@@ -17,16 +17,17 @@ class DeskRepository extends CoreRepository
     {
         return $this->model->create($data);
     }
+
     public function update(array $data, int $id)
     {
         $desk = $this->findByField("id", $id);
-        if (!$desk)
-        {
+        if (!$desk) {
             return null;
         }
         $desk->update($data);
         return $desk->refresh();
     }
+
     public function destroy(int $id)
     {
         $desk = $this->findByField("id", $id);
@@ -78,9 +79,27 @@ class DeskRepository extends CoreRepository
 //            ->select('id', 'desk_number', 'capacity')
 //            ->limit(5)
 //            ->get();
+//        return $this->baseAvailableQuery($reservationDate, $startTime, $endTime, $guestCount)
+//            ->orderByRaw('capacity - ? ASC', [$guestCount])
+//            ->select('id', 'desk_number', 'capacity')
+//            ->limit(5)
+//            ->get();
         return $this->baseAvailableQuery($reservationDate, $startTime, $endTime, $guestCount)
-            ->orderByRaw('capacity - ? ASC', [$guestCount])
-            ->select('id', 'desk_number', 'capacity')
+            ->where('capacity', '<=', $guestCount + 4)
+            ->select([
+                'id',
+                'desk_number',
+                'capacity',
+
+                DB::raw("
+                      (
+                        (
+                            ABS(capacity - {$guestCount}) * 2
+                            + (capacity - {$guestCount}) * 3
+                        ) as score
+                 ")
+            ])
+            ->orderBy('score')
             ->limit(5)
             ->get();
     }
